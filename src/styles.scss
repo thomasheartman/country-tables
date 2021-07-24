@@ -1,0 +1,16 @@
+:root {
+  --var: 5px;
+}
+
+$columns: area, population, language;
+
+@each $col in $columns {
+  $i: index($columns, $col);
+  table:nth-child($i):before {
+    content: $col;
+  }
+}
+
+:export {
+  columns: $columns;
+}
