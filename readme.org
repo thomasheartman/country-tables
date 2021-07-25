@@ -1,11 +1,12 @@
 
 
-* Country tables
+* Country tables 🤠🎸
 
 A simple HTML webpage that fetches some data from [[https://restcountries.eu/][restcountries.eu]] and
 displays it in two tables.
 
-It uses React and TypeScript for the tables.
+It uses React and TypeScript for the tables, using [[https://swr.vercel.app/][swr]] and [[https://react-table.tanstack.com/][React
+Table]] as the main packages for the runtime.
 
 ** Development requirements
 
@@ -14,14 +15,14 @@ The project requires [[https://nodejs.org/][node.js]] and npm/[[https://yarnpkg.
 the ~shell.nix~ file. For other systems, you'll have to provide these
 dependencies yourself.
 
-** Building/running the project
+** Building/running the project 🏃
 
 - Build :: ~npm run build~
 - Run (dev mode) :: ~npm start~
 - Test :: ~npm run test~
 - Storybook :: ~npm run storybook~
 
-** Project structure
+** Project structure 🏗️
 
 The project uses a /very/ flat structure, with nearly all of the
 important files being placed directly in ~src~. The one exception is
@@ -30,14 +31,14 @@ important files being placed directly in ~src~. The one exception is
 While this structure would quickly get unmanageable in a larger
 project, it works just fine for a quick one-off.
 
-*** Tests
+*** Tests 🧪
 
 Tests are placed right next to the file they're testing. They're
 mainly testing sorting behavior in this project, as TypeScript covers
 most of the typing issues and storybook is enough for the visual
 aspect at this point.
 
-*** Storybook
+*** Storybook 📖
 
 There are a few stories included (mainly for the tables). They're not
 accurate in terms of styling, but they served development well for
@@ -45,11 +46,32 @@ working with the raw table structure.
 
 ** Result
 
-*** Would rather do this on the server
+*** Client? Or server? 🐕‍🦺
 
-*** Two entry points
+In a production-/work-setting, I'd rather do most of this work on the
+server and render into a template. However, as I understood the
+constraints of the task, this should all be done on the client.
 
-*** Styling
+*** To paginate or not to paginate 🤔
+
+The tables are currently displayed in all of their unpaginated glory!
+This is great for searching for something you want, but there's also a
+lot of data. That means that scrolling past them -- especially on a
+smaller screen -- is going to be a pain.
+
+Depending on the final use case, it is likely that paginating the
+tables would be a better idea. However, this would require some
+additional work /and/ would also require a more involved design. In
+particular: how would you design pagination for smaller screens if the
+data visualization changes as it does now?
+
+*** Two entry points 👆👇
+
+Because most of the site is static and doesn't need to be a JS-app, I
+decided to instead try and make only the sections that depend on the
+data (that is: the tables) part of the React package.
+
+*** Styling 💅
 
 The styling is intentionally simple. The most interesting part about
 it is styling tables for small screens via pseudo-elements. This
@@ -59,8 +81,62 @@ can be improved, it's enough for a proof of concept.
 There's also certain text that's visually hidden but still available
 to screen readers.
 
-*** Further improvements
+Also: the styling is loaded by the JS. This is /purely/ because it was
+simpler. Ideally it should be loaded directly from the HTML, but
+because it was easier to have webpack process it when loading it from
+the JS, it was left that way for now.
 
-*** Accessibility issues?
+*** Caching data (localstorage) 💰
 
-**** Aria-live or not
+In the current incarnation, swr first tries to fetch cached data from
+localstorage before checking the API. This is potentially a
+bottleneck, as it has to deserialize a lot of data from JSON. It may
+be better to use [[https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API][indexedDB]] or skip the caching completely.
+
+To delete the cached data, use your browser's dev tools.
+
+*** Tables and sorting 🪑
+
+The project uses React Table for its table needs right now. I've not
+used it previously, so it was an interesting experience. The docs
+could use some work, but overall it seems fairly solid. The
+performance also seems fine to me, though I haven't done any profiling
+and my hardware is relatively capable.
+
+The data set we work with in this case is small, so you can get away
+with a lot, but for larger data sets, we might want to consider other
+options. Which leads nicely into the next point.
+
+*** Web workers? WASM? ... Rust? 🦀
+
+If we're doing a lot of work, can we get it off the main thread?
+Web workers should allow us to delegate the sorting to another thread,
+leaving the UI running smoothly on the side. With the current size of
+the data set, it's not really an issue, but it could quickly become
+one.
+
+Additionally, WASM might be able to provide further speedups for
+data-intensive work, and Rust is a good language for compiling to
+WASM. However, finding good resources for working with WASM and Web
+Workers was difficult, and not necessary for this project. However,
+it's definitely an avenue to look into.
+
+*** Accessibility 👀
+
+As always, I have tried to make everything as accessible as possible,
+but there may be things I've gotten wrong. The one issue highlighted
+by Firefox's accessibility checker is that some of the elements are
+divs with event listeners attached. This is obviously not great, but
+it seems to be how `react-table` deals with sortable headers. However,
+to combat this, I have placed /actual buttons/ with icons (and
+explanatory text for screen readers) inside the header rows, which
+makes it both focusable with a keyboard should also make it accessible
+to screen readers.
+
+**** Aria-live? 🎵
+
+When it comes to updating content on the page and alerting the user
+about it, `aria-live` is the way to go. However, because I don't know
+whether it's usually used in sorting tables (and in that case: how
+it's used), so I've left that out for now. However, before doing
+anything serious with this, that should certainly be resolved.
