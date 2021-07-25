@@ -187,10 +187,12 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
                           column.Header.toLowerCase()
                         )}
                       </span>
-                      {
-                        //@ts-ignore!
-                        getSortingIcon(column.isSorted, column.isSortedDesc)
-                      }
+                      <span aria-hidden="true">
+                        {
+                          //@ts-ignore!
+                          getSortingIcon(column.isSorted, column.isSortedDesc)
+                        }
+                      </span>
                     </button>
                   )
                 }
