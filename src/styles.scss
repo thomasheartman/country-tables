@@ -1,30 +1,59 @@
 @import "~modern-normalize";
 
+// Variables
 $small-screen-max: 700px;
 $large-screen-min: $small-screen-max + 1px;
 
 :root {
+  --border-radius: 5px;
+  --margin-m: 1rem;
   --max-table-cell-width: 30ch;
   --padding-m: 1rem;
   --padding-s: 0.5rem;
-  --margin-m: 1rem;
-  --border-radius: 5px;
   --table-alternate-bg: #f4f4f4;
 }
 
+// general styling
 body {
   max-width: 80ch;
   padding-inline: var(--padding-m);
   margin: auto;
+  line-height: 1.5;
 }
 
+body > * + *,
 section > * + * {
   margin-top: var(--margin-m);
 }
 
-p {
-  line-height: 1.5;
+footer {
+  border-top: 1px solid #ccc;
 }
+
+/**
+ * Visually hide an element, but leave it available for screen readers
+ * @link https://github.com/h5bp/html5-boilerplate/blob/master/dist/css/main.css
+ * @link http://snook.ca/archives/html_and_css/hiding-content-for-accessibility
+ */
+.screen-reader {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.sort-button {
+  background: none;
+  color: inherit;
+  border: none;
+}
+
+// table-specific styling
 
 #country-table tbody tr > :where(td:nth-of-type(3), td:nth-of-type(4)) {
   text-align: right;
@@ -75,13 +104,22 @@ td {
   td,
   tr {
     display: block;
+    text-align: left;
   }
 
   thead {
     position: relative;
   }
 
-  tr {
+  thead tr {
+    display: flex;
+    flex-wrap: wrap;
+    th {
+      flex: auto;
+    }
+  }
+
+  tbody tr {
     box-shadow: 0 1.8px 4.2px rgba(0, 0, 0, 0.007),
       0 2.5px 7.5px rgba(0, 0, 0, 0.015), 0 2.9px 9.8px rgba(0, 0, 0, 0.024),
       0 3.1px 11.5px rgba(0, 0, 0, 0.039), 0 3.4px 12.9px rgba(0, 0, 0, 0.062),
@@ -99,9 +137,7 @@ td {
 
   tbody td {
     max-width: 100%;
-    position: relative;
     display: flex;
-    width: 100%;
   }
 
   tbody td::before {
@@ -110,26 +146,10 @@ td {
     width: 50%;
     text-align: left;
   }
-
-  $columns: "name", "area", "population", "language";
-
-  @each $col in $columns {
-    $i: index($columns, $col);
-    td:nth-of-type($i)::before {
-      content: $col;
-    }
-  }
 }
 
 table ul {
   margin: 0;
-}
-
-$columns: name, area, population, language;
-
-@each $col in $columns {
-  $i: index($columns, $col);
-  table:nth-child($i):before {
-    content: $col;
-  }
+  list-style-type: none;
+  padding-left: 0;
 }
