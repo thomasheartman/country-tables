@@ -100,13 +100,13 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
         disableSortBy: true,
       },
       {
-        Header: "Area (sqmi)",
+        Header: "Area",
         accessor: (row: ProcessedDataForSorting) => row.areaSqMi ?? "N/A",
         defaultCanSort: true,
         sortType: compAreas,
       },
       {
-        Header: "Population (in millions)",
+        Header: "Pop.",
         accessor: (row: ProcessedDataForSorting) => row.populationMillions,
         defaultCanSort: true,
         sortType: compPopulations,
@@ -150,6 +150,10 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
     }
   };
 
+  const getSortingIcon = (isSorted: boolean, isSortedDesc: boolean) => {
+    return !isSorted ? "🔃" : isSortedDesc ? "🔽" : "🔼";
+  };
+
   return (
     <table id="country-table" {...getTableProps()}>
       <thead>
@@ -173,15 +177,21 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
                 {
                   //@ts-ignore!
                   column.canSort && (
-                    <button>
-                      {buttonText(
+                    <button className="sort-button">
+                      <span className="screen-reader">
+                        {buttonText(
+                          //@ts-ignore!
+                          column.isSorted,
+                          //@ts-ignore!
+                          column.isSortedDesc,
+                          //@ts-ignore!
+                          column.Header.toLowerCase()
+                        )}
+                      </span>
+                      {
                         //@ts-ignore!
-                        column.isSorted,
-                        //@ts-ignore!
-                        column.isSortedDesc,
-                        //@ts-ignore!
-                        column.Header.toLowerCase()
-                      )}
+                        getSortingIcon(column.isSorted, column.isSortedDesc)
+                      }
                     </button>
                   )
                 }
@@ -220,7 +230,7 @@ const CountryTableWithData = () => {
     () =>
       (countries ?? []).map((x: RawData) => ({
         ...x,
-        populationMillions: roundToMillion(x.population),
+        populationMillions: `${roundToMillion(x.population)}M`,
         areaSqMi: (x.area && squareKmToSquareMi(x.area)) || undefined,
       })),
     [countries]

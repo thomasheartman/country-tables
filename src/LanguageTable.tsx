@@ -33,8 +33,9 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
         ),
       },
       {
-        Header: "Total population (in millions)",
-        accessor: (row: ProcessedData) => roundToMillion(row.totalPopulation),
+        Header: "Pop.",
+        accessor: (row: ProcessedData) =>
+          `${roundToMillion(row.totalPopulation)}M`,
       },
     ],
     []
