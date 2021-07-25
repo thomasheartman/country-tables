@@ -1,0 +1,66 @@
+
+
+* Country tables
+
+A simple HTML webpage that fetches some data from [[https://restcountries.eu/][restcountries.eu]] and
+displays it in two tables.
+
+It uses React and TypeScript for the tables.
+
+** Development requirements
+
+The project requires [[https://nodejs.org/][node.js]] and npm/[[https://yarnpkg.com/][yarn]] to run and build. If you use
+[[https://nixos.org/][Nix]], then all the required dependencies should be made available in
+the ~shell.nix~ file. For other systems, you'll have to provide these
+dependencies yourself.
+
+** Building/running the project
+
+- Build :: ~npm run build~
+- Run (dev mode) :: ~npm start~
+- Test :: ~npm run test~
+- Storybook :: ~npm run storybook~
+
+** Project structure
+
+The project uses a /very/ flat structure, with nearly all of the
+important files being placed directly in ~src~. The one exception is
+~index.html~ which is in the ~public~ directory.
+
+While this structure would quickly get unmanageable in a larger
+project, it works just fine for a quick one-off.
+
+*** Tests
+
+Tests are placed right next to the file they're testing. They're
+mainly testing sorting behavior in this project, as TypeScript covers
+most of the typing issues and storybook is enough for the visual
+aspect at this point.
+
+*** Storybook
+
+There are a few stories included (mainly for the tables). They're not
+accurate in terms of styling, but they served development well for
+working with the raw table structure.
+
+** Result
+
+*** Would rather do this on the server
+
+*** Two entry points
+
+*** Styling
+
+The styling is intentionally simple. The most interesting part about
+it is styling tables for small screens via pseudo-elements. This
+presents a few challenges, and while there are still points where it
+can be improved, it's enough for a proof of concept.
+
+There's also certain text that's visually hidden but still available
+to screen readers.
+
+*** Further improvements
+
+*** Accessibility issues?
+
+**** Aria-live or not
