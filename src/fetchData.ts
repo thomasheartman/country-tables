@@ -32,7 +32,6 @@ export const useCountryData = () => {
     revalidateOnMount: true,
     initialData: getFromCache(),
     onSuccess: (data, key) => {
-      console.log("storing in key", key);
       window.localStorage.setItem(key, JSON.stringify(data));
     },
   });
