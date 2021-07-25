@@ -1,3 +1,5 @@
+// this is a super basic placeholder element for when we don't have data, either
+// because of an error or because it's still loading.
 import React from "react";
 
 // export for Storybook
