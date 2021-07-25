@@ -16,18 +16,3 @@ export type RawData = {
   area?: number;
   region: string;
 };
-
-export type LanguageTableData = {
-  language: string;
-  countries: {
-    name: string;
-    population: number;
-  };
-};
-
-export type CountryTableData = {
-  name: string;
-  population: number;
-  area: number | undefined;
-  region: string;
-};
