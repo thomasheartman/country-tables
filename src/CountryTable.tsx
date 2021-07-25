@@ -4,6 +4,7 @@ import { RawData } from "./dataTypes";
 import { useCountryData } from "./fetchData";
 import Fallback from "./FallbackNote";
 import { compareAreas, comparePopulations } from "./comparison";
+import { roundToMillion } from "./format";
 
 type ProcessedDataForSorting = RawData & {
   areaSqMi: string | undefined;
@@ -206,11 +207,6 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
 };
 
 const squareKmToSquareMi = (n: number) => (n * 0.386102159).toFixed();
-const roundToMillion = (n: number) => {
-  let result = (n / 1000000).toFixed(1);
-
-  return result === "0.0" ? "<0.1" : result;
-};
 
 const CountryTableWithData = () => {
   const { countries, isLoading, error } = useCountryData();
