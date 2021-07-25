@@ -1,5 +1,5 @@
 // this file contains various comparison functions used for sorting data.
-import { CleanedData, RawData } from "./dataTypes";
+import { RawData } from "./dataTypes";
 
 export const compareCountryNames = (a: string, b: string) =>
   // the only entry to start with a non-ascii character is the Åland islands. To

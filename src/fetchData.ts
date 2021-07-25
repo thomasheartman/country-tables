@@ -1,7 +1,7 @@
 // this file contains a hook for using country data
 import useSWR from "swr";
 import { compareCountryNames } from "./comparison";
-import { processData, RawData } from "./dataTypes";
+import { RawData } from "./dataTypes";
 
 const fields = ["name", "languages", "population", "area", "region"] as const;
 

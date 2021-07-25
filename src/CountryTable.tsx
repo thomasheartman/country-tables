@@ -1,18 +1,12 @@
 import React, { useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
-import { ProcessedData, RawData } from "./dataTypes";
+import { RawData } from "./dataTypes";
 import { useCountryData } from "./fetchData";
 import Fallback from "./FallbackNote";
 import { compareAreas, comparePopulations } from "./comparison";
 
-// Show columns: Name, Region, Area, Population
-// Format the area in square metric miles, without decimals (example, for Norway “125020”)
-// Format the population in millions with one decimal (example, for Norway “5.2”)
-// Input option for visualization: sort by one of name, population or area
-// Summary at the end: Show the population average from all the countries, and also the countries with smallest and biggest area.
-
 type ProcessedDataForSorting = RawData & {
-  areaSqMi: string;
+  areaSqMi: string | undefined;
   populationMillions: string;
 };
 
@@ -48,20 +42,22 @@ const DataSummary: React.FC<TableProps> = ({ data }) => {
 
   const { smallest, largest } = useMemo(() => {
     if (!countriesWithAreas.length) {
-      return [null, null];
+      return { smallest: null, largest: null };
     }
 
     const [first, ...rest] = countriesWithAreas;
 
-    return countriesWithAreas.reduce(
+    return rest.reduce(
       (acc, c) => {
-        if (acc.smallest.area > c.area) acc.smallest = c;
-        if (acc.largest.area < c.area) acc.largest = c;
+        // the ts compiler fails to narrow these properly. based on the
+        // filtering above, we know they're not undefined.
+        if (acc.smallest.area! > c.area!) acc.smallest = c;
+        if (acc.largest.area! < c.area!) acc.largest = c;
         return acc;
       },
       { smallest: first, largest: first }
     );
-  });
+  }, [countriesWithAreas]);
 
   const formatCountry = (country: ProcessedDataForSorting) =>
     `${country.name} (${country.areaSqMi} square miles / ${country.area} square kilometers)`;
@@ -71,8 +67,10 @@ const DataSummary: React.FC<TableProps> = ({ data }) => {
       <h3>Summary</h3>
       <p>
         The average population is {roundToMillion(populationAverage)} million.
-        The largest country is {formatCountry(largest)}
-        and the smallest country is {formatCountry(smallest)}.
+        {smallest &&
+          largest &&
+          `The largest country is ${formatCountry(largest)}
+        and the smallest country is ${formatCountry(smallest)}.`}
       </p>
     </section>
   );
@@ -91,7 +89,7 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
     () => [
       {
         Header: "Name",
-        accessor: "name",
+        accessor: (row: ProcessedDataForSorting) => row.name,
         defaultCanSort: true,
       },
       {
@@ -112,7 +110,7 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
         sortType: compPopulations,
       },
     ],
-    []
+    [compAreas, compPopulations]
   );
 
   const tableInstance = useTable(
@@ -123,7 +121,8 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
       disableSortRemove: true,
       defaultCanSort: false,
       initialState: {
-        sortBy: [{ id: "name" }],
+        //@ts-ignore!
+        sortBy: [{ id: "Name" }],
       },
     },
     useSortBy
@@ -141,7 +140,7 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
     return `Sort by ${columnName} ${nextDirection}`;
   };
 
-  const getAriaSortValue = (isSorted, isSortedDesc) => {
+  const getAriaSortValue = (isSorted: boolean, isSortedDesc: boolean) => {
     if (!isSorted) {
       return undefined;
     } else {
@@ -155,23 +154,35 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
+              // tsc complains about missing properties on the headergroup
+              //type. It doesn't seem to recognize the props properly when
+              //also using sorting, so we ignore them below.
               <th
+                //@ts-ignore!
                 {...column.getHeaderProps(column.getSortByToggleProps)}
                 aria-sort={getAriaSortValue(
+                  //@ts-ignore!
                   column.isSorted,
+                  //@ts-ignore!
                   column.isSortedDesc
                 )}
               >
                 {column.render("Header")}
-                {column.canSort && (
-                  <button>
-                    {buttonText(
-                      column.isSorted,
-                      column.isSortedDesc,
-                      column.Header.toLowerCase()
-                    )}
-                  </button>
-                )}
+                {
+                  //@ts-ignore!
+                  column.canSort && (
+                    <button>
+                      {buttonText(
+                        //@ts-ignore!
+                        column.isSorted,
+                        //@ts-ignore!
+                        column.isSortedDesc,
+                        //@ts-ignore!
+                        column.Header.toLowerCase()
+                      )}
+                    </button>
+                  )
+                }
               </th>
             ))}
           </tr>
@@ -204,12 +215,12 @@ const roundToMillion = (n: number) => {
 const CountryTableWithData = () => {
   const { countries, isLoading, error } = useCountryData();
 
-  const data: ProcessedDataForSorting = useMemo(
+  const data: ProcessedDataForSorting[] = useMemo(
     () =>
-      (countries ?? []).map((x) => ({
+      (countries ?? []).map((x: RawData) => ({
         ...x,
         populationMillions: roundToMillion(x.population),
-        areaSqMi: x.area && squareKmToSquareMi(x.area),
+        areaSqMi: (x.area && squareKmToSquareMi(x.area)) || undefined,
       })),
     [countries]
   );
