@@ -1,7 +1,6 @@
 import React, { useMemo } from "react";
 import { useTable } from "react-table";
-import { RawData } from "./dataTypes";
-import { useCountryData } from "./fetchData";
+import { RawData, useCountryData } from "./api";
 import Fallback from "./FallbackNote";
 import { roundToMillion } from "./format";
 

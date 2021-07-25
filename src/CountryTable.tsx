@@ -1,8 +1,7 @@
 import "./styles.scss";
 import React, { useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
-import { RawData } from "./dataTypes";
-import { useCountryData } from "./fetchData";
+import { RawData, useCountryData } from "./api";
 import Fallback from "./FallbackNote";
 import { compareAreas, comparePopulations } from "./comparison";
 import { roundToMillion } from "./format";

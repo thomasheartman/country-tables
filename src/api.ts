@@ -1,9 +1,16 @@
-// this file contains a hook for using country data
+// API interactions and data types
 import useSWR from "swr";
 import { compareCountryNames } from "./comparison";
-import { RawData } from "./dataTypes";
 
 const fields = ["name", "languages", "population", "area", "region"] as const;
+
+export type RawData = {
+  name: string;
+  languages: { name: string }[];
+  population: number;
+  area?: number;
+  region: string;
+};
 
 const endpoint = `https://restcountries.eu/rest/v2/all?fields=${fields.join(
   ";"
