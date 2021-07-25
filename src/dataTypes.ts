@@ -17,41 +17,6 @@ export type RawData = {
   region: string;
 };
 
-export type ProcessedData = {
-  name: string;
-  languages: { name: string }[];
-  population: number;
-  area: Maybe<number>;
-  region: Maybe<string>;
-};
-
-export const processData = (raw: RawData): ProcessedData => ({
-  ...raw,
-  area: raw.area === undefined ? nothing() : just(raw.area),
-  region: raw.region.trim().length === 0 ? nothing() : just(raw.region),
-});
-
-type Maybe<T> = { kind: "just"; value: T } | { kind: "nothing" };
-export const or = <T>(maybe: Maybe<T>, fallback: T) => {
-  switch (maybe.kind) {
-    case "just":
-      return maybe.value;
-    case "nothing":
-      return fallback;
-  }
-};
-export const just = <T>(value: T): Maybe<T> => ({ kind: "just", value });
-export const nothing = <T>(): Maybe<T> => ({ kind: "nothing" });
-export const isJust = <T>(maybe: Maybe<T>) => maybe.kind === "just";
-export const map = <T, U>(maybe: Maybe<T>, f: (x: T) => U): Maybe<U> => {
-  switch (maybe.kind) {
-    case "just":
-      return just(f(maybe.value));
-    case "nothing":
-      return nothing();
-  }
-};
-
 export type LanguageTableData = {
   language: string;
   countries: {
