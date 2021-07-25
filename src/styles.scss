@@ -1,5 +1,30 @@
+@import "~modern-normalize";
+
 :root {
-  --var: 5px;
+  --max-table-cell-width: 30ch;
+}
+
+body {
+  max-width: 1024px;
+  padding-inline: 1rem;
+}
+
+#country-table tr > :where(td:nth-of-type(3), td:nth-of-type(4)) {
+  text-align: right;
+}
+
+table {
+  border-spacing: 1rem;
+}
+
+th,
+td {
+  max-width: var(--max-table-cell-width);
+  vertical-align: top;
+}
+
+table ul {
+  margin: 0;
 }
 
 $columns: area, population, language;
