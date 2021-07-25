@@ -21,14 +21,19 @@ export const useCountryData = () => {
         countries.sort((a, b) => compareCountryNames(a.name, b.name))
       );
 
+  const getFromCache = (): RawData[] => {
+    const cached = window.localStorage.getItem(endpoint);
+    return cached ? JSON.parse(cached) : [];
+  };
+
   const { data, error } = useSWR(endpoint, fetcher, {
-    revalidateOnFocus: true,
-    revalidateOnReconnect: true,
-    onSuccess: (data, key, config) => {
-      console.log("onSuccess", data, key, config);
-    },
-    onError: (err, key, config) => {
-      console.log("onerror", err, key, config);
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+    revalidateOnMount: true,
+    initialData: getFromCache(),
+    onSuccess: (data, key) => {
+      console.log("storing in key", key);
+      window.localStorage.setItem(key, JSON.stringify(data));
     },
   });
 
