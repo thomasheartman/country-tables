@@ -43,34 +43,10 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
   const tableInstance = useTable({
     columns,
     data,
-    disableMultiSort: true,
-    disableSortRemove: true,
-    defaultCanSort: false,
-    initialState: {
-      //@ts-ignore!
-      sortBy: [{ id: "Name" }],
-    },
   });
 
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
     tableInstance;
-
-  const buttonText = (
-    isSorted: boolean,
-    isSortedDesc: boolean,
-    columnName: string
-  ) => {
-    const nextDirection = isSorted ? (isSortedDesc ? "asc" : "desc") : "asc";
-    return `Sort by ${columnName} ${nextDirection}`;
-  };
-
-  const getAriaSortValue = (isSorted: boolean, isSortedDesc: boolean) => {
-    if (!isSorted) {
-      return undefined;
-    } else {
-      return isSortedDesc ? "descending" : "ascending";
-    }
-  };
 
   return (
     <table {...getTableProps()}>
@@ -78,36 +54,7 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              // tsc complains about missing properties on the headergroup
-              //type. It doesn't seem to recognize the props properly when
-              //also using sorting, so we ignore them below.
-              <th
-                //@ts-ignore!
-                {...column.getHeaderProps(column.getSortByToggleProps)}
-                aria-sort={getAriaSortValue(
-                  //@ts-ignore!
-                  column.isSorted,
-                  //@ts-ignore!
-                  column.isSortedDesc
-                )}
-              >
-                {column.render("Header")}
-                {
-                  //@ts-ignore!
-                  column.canSort && (
-                    <button>
-                      {buttonText(
-                        //@ts-ignore!
-                        column.isSorted,
-                        //@ts-ignore!
-                        column.isSortedDesc,
-                        //@ts-ignore!
-                        column.Header.toLowerCase()
-                      )}
-                    </button>
-                  )
-                }
-              </th>
+              <th {...column.getHeaderProps()}>{column.render("Header")}</th>
             ))}
           </tr>
         ))}
@@ -119,7 +66,11 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
           return (
             <tr {...row.getRowProps()}>
               {row.cells.map((cell) => {
-                return <td {...cell.getCellProps()}>{cell.render("Cell")}</td>;
+                return (
+                  <td {...cell.getCellProps()} data-label={cell.column.id}>
+                    {cell.render("Cell")}
+                  </td>
+                );
               })}
             </tr>
           );
