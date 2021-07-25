@@ -9,7 +9,7 @@ export const compareAreas = (a: RawData, b: RawData): number => {
   return diff === 0 ? compareCountryNames(a.name, b.name) : diff;
 };
 
-export const comparePopulation = (a: RawData, b: RawData): number => {
+export const comparePopulations = (a: RawData, b: RawData): number => {
   const diff = a.population - b.population;
   return diff === 0 ? compareCountryNames(a.name, b.name) : diff;
 };

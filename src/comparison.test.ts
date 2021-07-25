@@ -4,7 +4,7 @@ import fc, { Arbitrary, compareFunc } from "fast-check";
 import {
   compareAreas,
   compareCountryNames,
-  comparePopulation,
+  comparePopulations,
 } from "./comparison";
 import { RawData } from "./dataTypes";
 
@@ -70,7 +70,7 @@ describe("compare populations", () => {
       fc.property(dataModel(), dataModel(), fc.nat(), (a, b, population) => {
         a.population = population;
         b.population = population;
-        return comparePopulation(a, b) === compareCountryNames(a.name, b.name);
+        return comparePopulations(a, b) === compareCountryNames(a.name, b.name);
       })
     );
   });
@@ -79,7 +79,7 @@ describe("compare populations", () => {
     fc.assert(
       fc.property(dataModel(), dataModel(), (a, b) => {
         a.population = b.population + 1;
-        return comparePopulation(a, b) > 0 && comparePopulation(b, a) < 0;
+        return comparePopulations(a, b) > 0 && comparePopulations(b, a) < 0;
       })
     );
   });

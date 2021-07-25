@@ -3,7 +3,7 @@ import { useTable, useSortBy } from "react-table";
 import { ProcessedData, RawData } from "./dataTypes";
 import { useCountryData } from "./fetchData";
 import Fallback from "./FallbackNote";
-import { compareAreas } from "./comparison";
+import { compareAreas, comparePopulations } from "./comparison";
 
 // Show columns: Name, Region, Area, Population
 // Format the area in square metric miles, without decimals (example, for Norway “125020”)
@@ -20,6 +20,7 @@ const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
   data,
 }) => {
   const compAreas = useMemo(() => compareAreas, []);
+  const compPopulations = useMemo(() => comparePopulations, []);
   const columns = useMemo(
     () => [
       {
