@@ -134,9 +134,6 @@ const LanguageTableWithData = () => {
 
   const data: ProcessedData[] = useMemo(() => {
     const langDict = (countries ?? []).reduce((acc, x: RawData) => {
-      if (x.name === "Norway") {
-        console.log(x);
-      }
       x.languages.forEach((lang) => {
         acc[lang.name] = {
           countries: [

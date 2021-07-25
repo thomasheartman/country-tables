@@ -1,3 +1,4 @@
+import "./styles.scss";
 import React, { useMemo } from "react";
 import { useTable, useSortBy } from "react-table";
 import { RawData } from "./dataTypes";
@@ -150,7 +151,7 @@ const RenderTable: React.FC<TableProps> = ({ data }) => {
   };
 
   return (
-    <table {...getTableProps()}>
+    <table id="country-table" {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>

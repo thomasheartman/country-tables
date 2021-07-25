@@ -9,7 +9,7 @@ ReactDOM.render(
   <React.StrictMode>
     <CountryTable />
   </React.StrictMode>,
-  document.getElementById("country-table")
+  document.getElementById("country-data")
 );
 
 ReactDOM.render(

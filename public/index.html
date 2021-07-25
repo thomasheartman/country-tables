@@ -9,7 +9,6 @@
     name="description"
     content="A web site listing various data about countries."
   />
-  <!-- <link rel="stylesheet" href="%PUBLIC_URL%/styles.css"/> -->
   <!--
     Notice the use of %PUBLIC_URL% in the tags above.
     It will be replaced with the URL of the `public` folder during the build.
@@ -24,11 +23,10 @@
 <body>
   <header>
     <h1>Country tables</h1>
-    <button id="theme-toggle">Toggle dark/light mode</button>
   </header>
   <main>
     <section>
-      <h2>Hi</h2>
+      <h2>About this page</h2>
       <p>This page lists some data about countries in the world. To
         navigate, you can scroll down, <a href="#countries">jump
           to the general country info section</a> or <a href="#countries-by-lang">jump to
@@ -40,16 +38,19 @@
       countries. The below table can be sorted by country name, area,
       or population. Some countries do not have any associated data
       for their total area or their region. In these cases, the value
-      listed is "N/A"</p>
+      listed is "N/A".</p>
       <p>At the bottom of this section is <a href=#data-summary>a short summary about the stats in the table</a>.</p>
-      <div id="country-table">
+      <div id="country-data">
         <noscript>This data isn't available without running
         JavaScript.</noscript>
       </div>
     </section>
     <section>
       <h2 id="countries-by-lang">Countries by language</h2>
-      <p>description</p>
+      <p>This section lists countries by the languages they speak. It
+      is sorted alphabetically by language. For each language, it
+      lists all the countries that speak it and how large their
+      populations are. It also lists the total of the countries' population</p>
       <div id="lang-table">
         <noscript>This data isn't available without running
         JavaScript.</noscript>
