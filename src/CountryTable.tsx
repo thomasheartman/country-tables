@@ -64,7 +64,7 @@ const DataSummary: React.FC<TableProps> = ({ data }) => {
     `${country.name} (${country.areaSqMi} square miles / ${country.area} square kilometers)`;
 
   return (
-    <section>
+    <section id="data-summary">
       <h3>Summary</h3>
       <p>
         The average population is {roundToMillion(populationAverage)} million.
