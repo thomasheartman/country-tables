@@ -16,11 +16,77 @@ type ProcessedDataForSorting = RawData & {
   populationMillions: string;
 };
 
-const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
-  data,
-}) => {
-  const compAreas = useMemo(() => compareAreas, []);
-  const compPopulations = useMemo(() => comparePopulations, []);
+type Row = { original: ProcessedDataForSorting };
+
+type TableProps = {
+  data: ProcessedDataForSorting[];
+};
+
+const DisplayData: React.FC<TableProps> = ({ data }) => {
+  return (
+    <>
+      <RenderTable data={data} />
+      <DataSummary data={data} />
+    </>
+  );
+};
+
+const DataSummary: React.FC<TableProps> = ({ data }) => {
+  const populationAverage = useMemo(
+    () =>
+      data.length
+        ? data.reduce((total, c) => total + c.population, 0) / data.length
+        : 0,
+    [data]
+  );
+
+  // ignoring countries without reported area
+  const countriesWithAreas = useMemo(
+    () => data.filter((x) => x.area !== undefined),
+    [data]
+  );
+
+  const { smallest, largest } = useMemo(() => {
+    if (!countriesWithAreas.length) {
+      return [null, null];
+    }
+
+    const [first, ...rest] = countriesWithAreas;
+
+    return countriesWithAreas.reduce(
+      (acc, c) => {
+        if (acc.smallest.area > c.area) acc.smallest = c;
+        if (acc.largest.area < c.area) acc.largest = c;
+        return acc;
+      },
+      { smallest: first, largest: first }
+    );
+  });
+
+  const formatCountry = (country: ProcessedDataForSorting) =>
+    `${country.name} (${country.areaSqMi} square miles / ${country.area} square kilometers)`;
+
+  return (
+    <section>
+      <h3>Summary</h3>
+      <p>
+        The average population is {roundToMillion(populationAverage)} million.
+        The largest country is {formatCountry(largest)}
+        and the smallest country is {formatCountry(smallest)}.
+      </p>
+    </section>
+  );
+};
+
+const RenderTable: React.FC<TableProps> = ({ data }) => {
+  const compAreas = useMemo(
+    () => (a: Row, b: Row) => compareAreas(a.original, b.original),
+    []
+  );
+  const compPopulations = useMemo(
+    () => (a: Row, b: Row) => comparePopulations(a.original, b.original),
+    []
+  );
   const columns = useMemo(
     () => [
       {
@@ -31,7 +97,7 @@ const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
       {
         Header: "Region",
         accessor: (row: ProcessedDataForSorting) => row.region || "N/A",
-        defaultCanSort: false,
+        disableSortBy: true,
       },
       {
         Header: "Area (sqmi)",
@@ -41,9 +107,9 @@ const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
       },
       {
         Header: "Population (in millions)",
-        accessor: "population",
+        accessor: (row: ProcessedDataForSorting) => row.populationMillions,
         defaultCanSort: true,
-        sortType: "number",
+        sortType: compPopulations,
       },
     ],
     []
@@ -55,6 +121,7 @@ const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
       data,
       disableMultiSort: true,
       disableSortRemove: true,
+      defaultCanSort: false,
       initialState: {
         sortBy: [{ id: "name" }],
       },
@@ -74,21 +141,37 @@ const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
     return `Sort by ${columnName} ${nextDirection}`;
   };
 
+  const getAriaSortValue = (isSorted, isSortedDesc) => {
+    if (!isSorted) {
+      return undefined;
+    } else {
+      return isSortedDesc ? "descending" : "ascending";
+    }
+  };
+
   return (
     <table {...getTableProps()}>
       <thead>
         {headerGroups.map((headerGroup) => (
           <tr {...headerGroup.getHeaderGroupProps()}>
             {headerGroup.headers.map((column) => (
-              <th {...column.getHeaderProps(column.getSortByToggleProps)}>
+              <th
+                {...column.getHeaderProps(column.getSortByToggleProps)}
+                aria-sort={getAriaSortValue(
+                  column.isSorted,
+                  column.isSortedDesc
+                )}
+              >
                 {column.render("Header")}
-                <button>
-                  {buttonText(
-                    column.isSorted,
-                    column.isSortedDesc,
-                    column.Header.toLowerCase()
-                  )}
-                </button>
+                {column.canSort && (
+                  <button>
+                    {buttonText(
+                      column.isSorted,
+                      column.isSortedDesc,
+                      column.Header.toLowerCase()
+                    )}
+                  </button>
+                )}
               </th>
             ))}
           </tr>
@@ -112,15 +195,15 @@ const RenderTable: React.FC<{ data: ProcessedDataForSorting[] }> = ({
 };
 
 const squareKmToSquareMi = (n: number) => (n * 0.386102159).toFixed();
+const roundToMillion = (n: number) => {
+  let result = (n / 1000000).toFixed(1);
+
+  return result === "0.0" ? "<0.1" : result;
+};
 
 const CountryTableWithData = () => {
   const { countries, isLoading, error } = useCountryData();
 
-  const roundToMillion = (n: number) => {
-    let result = (n / 1000000).toFixed(1);
-
-    return result === "0.0" ? "< 0.1" : result;
-  };
   const data: ProcessedDataForSorting = useMemo(
     () =>
       (countries ?? []).map((x) => ({
@@ -136,7 +219,7 @@ const CountryTableWithData = () => {
   } else if (error && !countries) {
     return <Fallback state={{ state: "error", msg: error.toString() }} />;
   } else {
-    return <RenderTable data={data} />;
+    return <DisplayData data={data} />;
   }
 };
 
