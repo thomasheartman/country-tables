@@ -1,41 +1,135 @@
 @import "~modern-normalize";
 
+$small-screen-max: 700px;
+$large-screen-min: $small-screen-max + 1px;
+
 :root {
   --max-table-cell-width: 30ch;
+  --padding-m: 1rem;
+  --padding-s: 0.5rem;
+  --margin-m: 1rem;
+  --border-radius: 5px;
+  --table-alternate-bg: #f4f4f4;
 }
 
 body {
-  max-width: 1024px;
-  padding-inline: 1rem;
+  max-width: 80ch;
+  padding-inline: var(--padding-m);
+  margin: auto;
 }
 
-#country-table tr > :where(td:nth-of-type(3), td:nth-of-type(4)) {
+section > * + * {
+  margin-top: var(--margin-m);
+}
+
+p {
+  line-height: 1.5;
+}
+
+#country-table tbody tr > :where(td:nth-of-type(3), td:nth-of-type(4)) {
+  text-align: right;
+}
+
+#lang-table tbody tr > td:nth-of-type(3) {
   text-align: right;
 }
 
 table {
-  border-spacing: 1rem;
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  border-radius: var(--border-radius);
+}
+
+thead th {
+  text-align: left;
 }
 
 th,
 td {
   max-width: var(--max-table-cell-width);
   vertical-align: top;
+  padding: var(--padding-s);
+}
+
+@media only screen and (min-width: $large-screen-min) {
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: white;
+    box-shadow: 0 0.3px 0px rgba(0, 0, 0, 0.012),
+      0 0.9px 0px rgba(0, 0, 0, 0.018), 0 4px 0px rgba(0, 0, 0, 0.03);
+    z-index: 1;
+  }
+
+  tbody tr:nth-of-type(even) {
+    background-color: var(--table-alternate-bg);
+  }
+}
+
+@media only screen and (max-width: $small-screen-max) {
+  table,
+  thead,
+  tbody,
+  th,
+  td,
+  tr {
+    display: block;
+  }
+
+  thead {
+    position: relative;
+  }
+
+  tr {
+    box-shadow: 0 1.8px 4.2px rgba(0, 0, 0, 0.007),
+      0 2.5px 7.5px rgba(0, 0, 0, 0.015), 0 2.9px 9.8px rgba(0, 0, 0, 0.024),
+      0 3.1px 11.5px rgba(0, 0, 0, 0.039), 0 3.4px 12.9px rgba(0, 0, 0, 0.062),
+      0 5px 14px rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius);
+
+    td:nth-of-type(even) {
+      background-color: var(--table-alternate-bg);
+    }
+  }
+
+  tr + tr {
+    margin-top: var(--margin-m);
+  }
+
+  tbody td {
+    max-width: 100%;
+    position: relative;
+    display: flex;
+    width: 100%;
+  }
+
+  tbody td::before {
+    content: attr(data-label);
+    font-weight: bolder;
+    width: 50%;
+    text-align: left;
+  }
+
+  $columns: "name", "area", "population", "language";
+
+  @each $col in $columns {
+    $i: index($columns, $col);
+    td:nth-of-type($i)::before {
+      content: $col;
+    }
+  }
 }
 
 table ul {
   margin: 0;
 }
 
-$columns: area, population, language;
+$columns: name, area, population, language;
 
 @each $col in $columns {
   $i: index($columns, $col);
   table:nth-child($i):before {
     content: $col;
   }
-}
-
-:export {
-  columns: $columns;
 }
