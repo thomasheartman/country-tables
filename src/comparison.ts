@@ -2,6 +2,12 @@
 import { CleanedData, RawData } from "./dataTypes";
 
 export const compareCountryNames = (a: string, b: string) =>
+  // the only entry to start with a non-ascii character is the Åland islands. To
+  // avoid it getting sorted in with Afghanistan, Albania, et al., we'll use a
+  // nordic locale for comparisons. Additionally, ignore case differences.
+  //
+  // More info:
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
   a.localeCompare(b, "no", { sensitivity: "accent" });
 
 export const compareAreas = (a: RawData, b: RawData): number => {

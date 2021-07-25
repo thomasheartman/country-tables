@@ -16,20 +16,8 @@ export const useCountryData = () => {
           ? ((await res.json()) as RawData[])
           : Promise.reject("API request failed.")
       )
-      // .then((countries) => countries.map(processData))
       .then((countries) =>
-        countries.sort((a, b) =>
-          // the only entry to start with a non-ascii character is the Åland
-          // islands. To avvoid it getting sorted in with the Afghanistan,
-          // Albania, et al., we'll use a nordic locale for comparisons.
-          // Additionally, ignore case differences.
-          //
-          // More info:
-          // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Collator/Collator
-          a.name.localeCompare(b.name, "no", {
-            sensitivity: "accent",
-          })
-        )
+        countries.sort((a, b) => compareCountryNames(a.name, b.name))
       );
 
   const { data, error } = useSWR(endpoint, fetcher, {
